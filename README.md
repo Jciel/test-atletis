@@ -173,6 +173,14 @@ Confirme a execução digitando:
 yes
 ```
 
+### Criar arquivos auxiliares do Codeception
+
+Cria arquivos de execução do Codeception:
+
+```bash
+docker compose exec app php vendor/bin/codecept build
+```
+
 ### Executar todos os testes unitarios
 
 Para executar todos os testes unitários:
