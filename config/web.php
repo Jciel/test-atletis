@@ -43,6 +43,9 @@ $config = [
             'identityClass' => \app\models\User::class,
             'enableAutoLogin' => false,
         ],
+        'response' => [
+            'format' => yii\web\Response::FORMAT_JSON,
+        ],
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
