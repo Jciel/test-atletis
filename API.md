@@ -1,5 +1,13 @@
 # Documentação da API
 
+Para facilitar os testes e a exploração dos endpoints, o projeto disponibiliza uma collection pronta para importação.
+O arquivo está localizado na raiz do projeto:
+**API_Collection_Atletis.json**
+Essa collection pode ser importada tanto no Insomnia quanto no Postman, contendo todos os endpoints disponíveis, 
+exemplos de requisições e configurações necessárias para testar a API.
+
+<br>
+
 ## URL Base
 
 ```text

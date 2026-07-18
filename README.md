@@ -145,7 +145,7 @@ A suíte de testes cobre principalmente:
 
 ## Executando os testes
 
-## Pré-requisitos
+### Pré-requisitos
 
 Antes de executar os testes, certifique-se que:
 
@@ -159,7 +159,7 @@ Subir os containers:
 docker compose up -d
 ```
 
-### 5. Executar as migrations no DB de teste
+### Executar as migrations do DB de teste
 
 Crie a estrutura do banco de dados de teste:
 
