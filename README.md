@@ -12,27 +12,27 @@ API REST desenvolvida em **Yii2** para gerenciamento de despesas pessoais, utili
 
 ---
 
+<br>
+
 # Como executar o projeto
 
-## Pré-requisitos
+### Pré-requisitos
 
 Antes de iniciar, certifique-se de possuir instalado em sua máquina:
 
 * Docker
 * Docker Compose
 
----
 
-## 1. Clonar o repositório
+### 1. Clonar o repositório
 
 ```bash
-git clone <URL_DO_REPOSITORIO>
-cd <NOME_DO_PROJETO>
+git clone https://github.com/Jciel/test-atletis
+cd test-atletis
 ```
 
----
 
-## 2. Configurar as variáveis de ambiente
+### 2. Configurar as variáveis de ambiente
 
 Copie o arquivo de exemplo:
 
@@ -40,23 +40,28 @@ Copie o arquivo de exemplo:
 cp .env.example .env
 ```
 
-Caso necessário, ajuste as variáveis de ambiente conforme seu ambiente.
+Ajuste as variáveis de ambiente conforme dados abaixo.
 
 Exemplo:
 
 ```env
-MYSQL_DATABASE=expenses
-MYSQL_USER=user
-MYSQL_PASSWORD=password
-MYSQL_ROOT_PASSWORD=root
+APP_NAME=testatletis
 
-JWT_SECRET=sua_chave_secreta
+JWT_SECRET=4Z3ubKaOZYBdS5RobiZqazmpnpRBEylXOqwSXJd6Qld
+JWT_ISSUER=atletis-api
 JWT_EXPIRE=3600
+
+DB_CONNECTION=mysql
+DB_HOST=atletisdb
+DB_PORT=3306
+DB_DATABASE=atletisdb
+DB_USERNAME=root
+DB_PASSWORD=root
+
 ```
 
----
 
-## 3. Subir os containers
+### 3. Subir os containers
 
 Execute:
 
@@ -66,9 +71,8 @@ docker compose up -d --build
 
 Aguarde até que todos os containers estejam em execução.
 
----
 
-## 4. Instalar as dependências do PHP
+### 4. Instalar as dependências do PHP
 
 Caso ainda não tenham sido instaladas:
 
@@ -76,9 +80,7 @@ Caso ainda não tenham sido instaladas:
 docker compose exec app composer install
 ```
 
----
-
-## 5. Executar as migrations
+### 5. Executar as migrations
 
 Crie a estrutura do banco de dados:
 
@@ -92,9 +94,7 @@ Confirme a execução digitando:
 yes
 ```
 
----
-
-## 6. Acessar a aplicação
+### 6. Acessar a aplicação
 
 Após a inicialização, a API estará disponível em:
 
@@ -102,7 +102,7 @@ Após a inicialização, a API estará disponível em:
 http://localhost:8080
 ```
 
-## Verificando a instalação
+### Verificando a instalação
 
 Após subir o ambiente, execute uma requisição para qualquer endpoint público, por exemplo:
 
@@ -112,11 +112,12 @@ POST /auth/register
 
 Se a resposta for retornada corretamente, o ambiente está pronto para utilização.
 
+---
 
+<br>
+<br>
 
-# Testes Automatizados
-
-## Visão geral
+## Testes unitarios
 
 O projeto utiliza **Codeception 5** para execução dos testes automatizados.
 
@@ -141,9 +142,8 @@ A suíte de testes cobre principalmente:
 * Filtros, paginação e ordenação
 * Validações de formulários
 
----
 
-# Executando os testes
+## Executando os testes
 
 ## Pré-requisitos
 
@@ -159,11 +159,9 @@ Subir os containers:
 docker compose up -d
 ```
 
----
+### 5. Executar as migrations no DB de teste
 
-## 5. Executar as migrations no DB de teste
-
-Crie a estrutura do banco de dados:
+Crie a estrutura do banco de dados de teste:
 
 ```bash
 docker compose exec app php yii migrate --db=testDb
@@ -175,9 +173,7 @@ Confirme a execução digitando:
 yes
 ```
 
----
-
-# Executar todos os testes Unit
+### Executar todos os testes unitarios
 
 Para executar todos os testes unitários:
 
@@ -198,9 +194,7 @@ Codeception PHP Testing Framework
 OK (XX tests, XX assertions)
 ```
 
----
-
-# Limpeza de cache do Codeception
+### Limpeza de cache do Codeception
 
 Caso ocorra erro relacionado a grupos antigos de testes:
 
@@ -222,9 +216,8 @@ Depois:
 docker compose exec app php vendor/bin/codecept run Unit
 ```
 
----
 
-# Atualizar arquivos auxiliares do Codeception
+### Atualizar arquivos auxiliares do Codeception
 
 Caso novos testes, módulos ou configurações sejam adicionados:
 
@@ -232,8 +225,8 @@ Caso novos testes, módulos ou configurações sejam adicionados:
 docker compose exec app php vendor/bin/codecept build
 ```
 
-
-
+<br>
+<br>
 
 # Arquitetura do Projeto
 
@@ -242,7 +235,7 @@ responsabilidades para facilitar manutenção, testes e evolução da aplicaçã
 Além da estrutura padrão do framework, foram adicionadas camadas específicas para concentrar regras de negócio,
 validações e transformação das respostas da API.
 
-## Estrutura do projeto
+### Estrutura do projeto
 
 ```text
 app/
@@ -254,13 +247,10 @@ app/
 ├── models/
 │   └── forms/
 ├── resources/
-├── services/
-└── web/
+└── services/
 ```
 
----
-
-# Controllers
+### Controllers
 
 Os Controllers possuem apenas a responsabilidade de receber a requisição HTTP, validar os dados de entrada e delegar o 
 processamento para a camada de Services.
@@ -274,9 +264,7 @@ Exemplo de responsabilidades:
 * Definir códigos HTTP da resposta
 * Retornar os Resources produzidos pelos Services
 
----
-
-# Models (ActiveRecord)
+### Models (ActiveRecord)
 
 Os Models representam as entidades persistidas no banco de dados utilizando o ActiveRecord do Yii2.
 
@@ -290,9 +278,8 @@ Sua responsabilidade está limitada a:
 
 Toda a lógica de negócio permanece na camada de Services.
 
----
 
-# Form Objects
+### Form Objects
 
 Os Form Objects são responsáveis exclusivamente pela validação dos dados recebidos pela API.
 Cada operação possui seu próprio objeto de validação, desacoplando as regras de entrada dos Models de persistência.
@@ -308,9 +295,8 @@ Exemplos:
 Essa abordagem evita utilizar os Models diretamente como objetos de entrada da API, permitindo regras específicas para 
 cada operação.
 
----
 
-# Services
+### Services
 
 Toda a regra de negócio da aplicação foi centralizada na camada de Services.
 Cada Service é responsável por executar uma funcionalidade específica da aplicação, mantendo os Controllers simples e 
@@ -334,24 +320,8 @@ Entre as responsabilidades dessa camada estão:
 
 Essa separação segue o princípio da **Responsabilidade Única (SRP)** do SOLID.
 
----
 
-# BaseService
-
-Foi criada uma classe BaseService contendo funcionalidades reutilizáveis utilizadas pelos demais Services.
-
-Entre elas:
-
-* saveOrFail()
-* deleteOrFail()
-* findOrFail()
-* findOneOrFail()
-
-Essa abordagem reduz duplicação de código e padroniza o tratamento de erros da aplicação.
-
----
-
-# Resources/Tranformers
+### Resources/Tranformers
 
 Os Resources são responsáveis por transformar os Models em respostas JSON.
 Dessa forma, a estrutura da resposta da API fica desacoplada da estrutura interna das entidades.
@@ -363,9 +333,8 @@ Exemplos:
 
 Isso facilita futuras alterações sem impactar os consumidores da API.
 
----
 
-# Autenticação
+### Autenticação
 
 A autenticação foi implementada utilizando **JWT (JSON Web Token)** através da biblioteca **firebase/php-jwt**.
 
@@ -377,9 +346,8 @@ Foi criado um componente próprio (`JwtService`) responsável por:
 
 As rotas protegidas utilizam autenticação Bearer Token através do componente `HttpBearerAuth`.
 
----
 
-# Banco de dados
+### Banco de dados
 
 Toda a estrutura do banco foi criada utilizando **Yii Migrations**, permitindo versionamento do schema e reprodução 
 completa do ambiente.
@@ -394,42 +362,38 @@ Os relacionamentos são garantidos através de Foreign Keys.
 
 ---
 
+<br>
+<br>
+
 # Decisões Técnicas
 
 Durante o desenvolvimento foram adotadas algumas decisões arquiteturais visando organização, reutilização de código e 
 facilidade de manutenção.
 
-## Separação da regra de negócio
+### Separação da regra de negócio
 
 Toda a lógica da aplicação foi implementada nos Services.
 Os Controllers apenas recebem a requisição e retornam a resposta.
 Essa abordagem facilita testes, manutenção e reutilização das regras de negócio.
 
----
 
-## Utilização de Form Objects
+### Utilização de Form Objects
 
 Ao invés de utilizar diretamente os Models para validar requisições HTTP, foram criados Form Objects específicos para 
 cada operação.
 Essa separação evita acoplamento entre persistência e entrada de dados.
 
----
-
-## Utilização de Resources
+### Utilização de Resources
 
 Foi criada uma camada de Resources para controlar exatamente quais informações são expostas pela API.
 Isso evita retornar diretamente os Models e permite personalizar facilmente as respostas.
 
----
-
-## Docker
+### Docker
 
 O ambiente foi totalmente containerizado utilizando Docker e Docker Compose.
 Isso garante facilidade de instalação e reprodutibilidade do ambiente de desenvolvimento.
 
----
-
-## Organização em camadas
+### Organização em camadas
 
 A arquitetura adotada pode ser resumida pelo seguinte fluxo:
 
