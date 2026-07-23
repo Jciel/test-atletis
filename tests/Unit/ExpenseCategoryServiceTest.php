@@ -4,6 +4,7 @@ namespace Unit;
 
 use app\models\Expense;
 use app\models\User;
+use app\services\MoneyFactory;
 use Yii;
 use app\models\ExpenseCategory;
 use app\models\forms\ExpenseCategoryForm;
@@ -135,7 +136,7 @@ class ExpenseCategoryServiceTest extends Unit
         $expense = new Expense();
 
         $expense->description = 'Lunch';
-        $expense->amount = 35.90;
+        $expense->amount = MoneyFactory::fromDecimal('35.90');
         $expense->expense_date = '2025-01-15';
         $expense->category_id = $category->id;
         $expense->user_id = Yii::$app->user->id;

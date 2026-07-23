@@ -2,7 +2,9 @@
 
 namespace app\models;
 
-use Yii;
+use app\behaviors\CastBehavior;
+use app\models\cast\MoneyCast;
+use Money\Money;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\Expression;
@@ -14,7 +16,7 @@ use yii\db\Expression;
  * @property int $user_id
  * @property int $category_id
  * @property string $description
- * @property float $amount
+ * @property Money $amount
  * @property string $expense_date
  * @property string $created_at
  * @property string $updated_at
@@ -40,7 +42,7 @@ class Expense extends \yii\db\ActiveRecord
         return [
             [['user_id', 'category_id', 'description', 'amount', 'expense_date'], 'required'],
             [['user_id', 'category_id'], 'integer'],
-            [['amount'], 'number', 'min' => 0.01],
+            [['currency'], 'string', 'length' => 3],
             [['expense_date', 'created_at', 'updated_at'], 'safe'],
             [['description'], 'string', 'max' => 255],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => ExpenseCategory::class, 'targetAttribute' => ['category_id' => 'id']],
@@ -59,6 +61,7 @@ class Expense extends \yii\db\ActiveRecord
             'category_id' => 'Category ID',
             'description' => 'Description',
             'amount' => 'Amount',
+            'currency' => 'Currency',
             'expense_date' => 'Expense Date',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
@@ -87,6 +90,9 @@ class Expense extends \yii\db\ActiveRecord
 
     public function behaviors(): array
     {
-        return [['class' => TimestampBehavior::class, 'value' => new Expression('NOW()')]];
+        return [
+            ['class' => TimestampBehavior::class, 'value' => new Expression('NOW()')],
+            ['class' => CastBehavior::class, 'casts' => ['amount' => ['class' => MoneyCast::class, 'currencyAttribute' => 'currency']]],
+        ];
     }
 }
