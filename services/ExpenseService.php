@@ -8,22 +8,19 @@ use app\models\Expense;
 use app\models\ExpenseCategory;
 use app\models\forms\ExpenseForm;
 use app\resources\ExpenseResource;
-use app\services\BaseService;
 use yii\data\ActiveDataProvider;
-use yii\web\BadRequestHttpException;
 
 class ExpenseService extends BaseService
 {
     public function create(ExpenseForm $form): array
     {
         $this->findOrFail(ExpenseCategory::class, $form->category_id);
-
         $expense = new Expense();
 
         $expense->user_id = Yii::$app->user->id;
         $expense->category_id = $form->category_id;
         $expense->description = $form->description;
-        $expense->amount = $form->amount;
+        $expense->amount = MoneyFactory::fromDecimal($form->amount, $form->currency);
         $expense->expense_date = $form->expense_date;
 
         $this->saveOrFail($expense);
@@ -44,15 +41,13 @@ class ExpenseService extends BaseService
 
     public function update(int $id, ExpenseForm $form): array
     {
-        $expense = $this->findOneOrFail(
-            Expense::find()->where(['id' => $id, 'user_id' => Yii::$app->user->id])
-        );
+        $expense = $this->findOneOrFail(Expense::find()->where(['id' => $id, 'user_id' => Yii::$app->user->id]));
 
         $this->findOrFail(ExpenseCategory::class, $form->category_id);
 
         $expense->category_id = $form->category_id;
         $expense->description = $form->description;
-        $expense->amount = $form->amount;
+        $expense->amount = MoneyFactory::fromDecimal($form->amount, $form->currency);
         $expense->expense_date = $form->expense_date;
 
         $this->saveOrFail($expense);

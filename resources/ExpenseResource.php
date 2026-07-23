@@ -2,24 +2,27 @@
 
 namespace app\resources;
 
+use app\models\cast\MoneyCast;
 use app\resources\BaseResource;
+use app\services\MoneyFormatter;
 
 class ExpenseResource extends BaseResource
 {
-    public static function make(object $model): array
+    public static function make(object $expenseModel): array
     {
         return [
-            'id' => (int)$model->id,
-            'description' => $model->description,
-            'amount' => (float)$model->amount,
-            'expense_date' => $model->expense_date,
+            'id' => (int)$expenseModel->id,
+            'description' => $expenseModel->description,
+            'amount' => MoneyFormatter::decimal($expenseModel->amount),
+            'currency' => $expenseModel->amount->getCurrency(),
+            'expense_date' => $expenseModel->expense_date,
             'category' => [
-                'id' => (int)$model->category->id,
-                'name' => $model->category->name,
-                'slug' => $model->category->slug,
+                'id' => (int)$expenseModel->category->id,
+                'name' => $expenseModel->category->name,
+                'slug' => $expenseModel->category->slug,
             ],
-            'created_at' => $model->created_at,
-            'updated_at' => $model->updated_at,
+            'created_at' => $expenseModel->created_at,
+            'updated_at' => $expenseModel->updated_at,
         ];
     }
 }

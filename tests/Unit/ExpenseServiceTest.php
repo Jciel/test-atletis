@@ -6,6 +6,7 @@ use app\models\Expense;
 use app\models\forms\ExpenseSearchForm;
 use app\models\User;
 use app\services\ExpenseService;
+use app\services\MoneyFactory;
 use Codeception\Test\Unit;
 use Yii;
 use app\models\ExpenseCategory;
@@ -45,7 +46,7 @@ class ExpenseServiceTest extends Unit
         $form = new ExpenseForm();
         $form->category_id = $category->id;
         $form->description = 'Lunch';
-        $form->amount = 35.90;
+        $form->amount = '120.90';
         $form->expense_date = '2025-01-15';
 
         $result = $this->service->create($form);
@@ -57,7 +58,7 @@ class ExpenseServiceTest extends Unit
         $this->assertArrayHasKey('amount', $result);
 
         $this->assertEquals('Lunch', $result['description']);
-        $this->assertEquals(35.90, $result['amount']);
+        $this->assertEquals(120.90, $result['amount']);
 
         $expense = Expense::findOne($result['id']);
 
@@ -70,13 +71,12 @@ class ExpenseServiceTest extends Unit
         $form = new ExpenseForm();
         $form->category_id = 99999;
         $form->description = 'Invalid expense';
-        $form->amount = 100;
+        $form->amount = '100';
         $form->expense_date = '2025-01-15';
 
         $this->expectException(NotFoundHttpException::class);
         $this->service->create($form);
     }
-
 
     public function testFindExpenseById(): void
     {
@@ -89,7 +89,7 @@ class ExpenseServiceTest extends Unit
         $expense->user_id = Yii::$app->user->id;
         $expense->category_id = $category->id;
         $expense->description = 'Supermarket';
-        $expense->amount = 250.75;
+        $expense->amount = MoneyFactory::fromDecimal('250.75');
         $expense->expense_date = '2025-01-15';
         $expense->save(false);
 
@@ -120,7 +120,7 @@ class ExpenseServiceTest extends Unit
         $expense->user_id = $anotherUser->id;
         $expense->category_id = $category->id;
         $expense->description = 'Private expense';
-        $expense->amount = 100;
+        $expense->amount = MoneyFactory::fromDecimal('100');
         $expense->expense_date = '2025-01-15';
         $expense->save(false);
 
@@ -144,25 +144,25 @@ class ExpenseServiceTest extends Unit
         $expense->user_id = Yii::$app->user->id;
         $expense->category_id = $category->id;
         $expense->description = 'Lunch';
-        $expense->amount = 35.90;
+        $expense->amount = MoneyFactory::fromDecimal('39.90');
         $expense->expense_date = '2025-01-15';
         $expense->save(false);
 
         $form = new ExpenseForm();
         $form->category_id = $newCategory->id;
         $form->description = 'Fuel';
-        $form->amount = 200;
+        $form->amount = 200.00;
         $form->expense_date = '2025-02-01';
 
         $result = $this->service->update($expense->id, $form);
 
         $this->assertIsArray($result);
         $this->assertEquals('Fuel', $result['description']);
-        $this->assertEquals(200, $result['amount']);
+        $this->assertEquals('200.00', $result['amount']);
         $expense->refresh();
         $this->assertEquals($newCategory->id, $expense->category_id);
         $this->assertEquals('Fuel', $expense->description);
-        $this->assertEquals(200, $expense->amount);
+        $this->assertEquals(20000, $expense->amount->getAmount());
     }
 
     public function testCannotUpdateExpenseFromAnotherUser(): void
@@ -183,7 +183,7 @@ class ExpenseServiceTest extends Unit
         $expense->user_id = $anotherUser->id;
         $expense->category_id = $category->id;
         $expense->description = 'Private expense';
-        $expense->amount = 100;
+        $expense->amount = MoneyFactory::fromDecimal('100.00');
         $expense->expense_date = '2025-01-15';
         $expense->save(false);
 
@@ -208,7 +208,7 @@ class ExpenseServiceTest extends Unit
         $expense->user_id = Yii::$app->user->id;
         $expense->category_id = $category->id;
         $expense->description = 'Temporary expense';
-        $expense->amount = 50;
+        $expense->amount = MoneyFactory::fromDecimal('50.00');
         $expense->expense_date = '2025-01-15';
         $expense->save(false);
 
@@ -234,7 +234,7 @@ class ExpenseServiceTest extends Unit
         $expense->user_id = $anotherUser->id;
         $expense->category_id = $category->id;
         $expense->description = 'Private expense';
-        $expense->amount = 80;
+        $expense->amount = MoneyFactory::fromDecimal('80.00');
         $expense->expense_date = '2025-01-15';
         $expense->save(false);
 
@@ -254,7 +254,7 @@ class ExpenseServiceTest extends Unit
         $expense->user_id = Yii::$app->user->id;
         $expense->category_id = $category->id;
         $expense->description = 'Supermarket';
-        $expense->amount = 200;
+        $expense->amount = MoneyFactory::fromDecimal('200.00');
         $expense->expense_date = '2025-01-15';
         $expense->save(false);
 
@@ -269,7 +269,7 @@ class ExpenseServiceTest extends Unit
         $otherExpense->user_id = $anotherUser->id;
         $otherExpense->category_id = $category->id;
         $otherExpense->description = 'Private expense';
-        $otherExpense->amount = 500;
+        $otherExpense->amount = MoneyFactory::fromDecimal('500.00');
         $otherExpense->expense_date = '2025-01-20';
         $otherExpense->save(false);
 
@@ -302,7 +302,7 @@ class ExpenseServiceTest extends Unit
         $expense1->user_id = Yii::$app->user->id;
         $expense1->category_id = $foodCategory->id;
         $expense1->description = 'Lunch';
-        $expense1->amount = 50;
+        $expense1->amount = MoneyFactory::fromDecimal('50.00');
         $expense1->expense_date = '2025-01-15';
         $expense1->save(false);
 
@@ -310,7 +310,7 @@ class ExpenseServiceTest extends Unit
         $expense2->user_id = Yii::$app->user->id;
         $expense2->category_id = $transportCategory->id;
         $expense2->description = 'Fuel';
-        $expense2->amount = 200;
+        $expense2->amount = MoneyFactory::fromDecimal('200.00');
         $expense2->expense_date = '2025-01-16';
         $expense2->save(false);
 
@@ -338,7 +338,7 @@ class ExpenseServiceTest extends Unit
         $expenseJanuary->user_id = Yii::$app->user->id;
         $expenseJanuary->category_id = $category->id;
         $expenseJanuary->description = 'January expense';
-        $expenseJanuary->amount = 100;
+        $expenseJanuary->amount = MoneyFactory::fromDecimal('100.00');
         $expenseJanuary->expense_date = '2025-01-15';
         $expenseJanuary->save(false);
 
@@ -346,7 +346,7 @@ class ExpenseServiceTest extends Unit
         $expenseFebruary->user_id = Yii::$app->user->id;
         $expenseFebruary->category_id = $category->id;
         $expenseFebruary->description = 'February expense';
-        $expenseFebruary->amount = 200;
+        $expenseFebruary->amount = MoneyFactory::fromDecimal('200.00');
         $expenseFebruary->expense_date = '2025-02-15';
         $expenseFebruary->save(false);
 
@@ -372,9 +372,9 @@ class ExpenseServiceTest extends Unit
         $category->save(false);
 
         $expenses = [
-            ['description' => 'March expense', 'expense_date' => '2025-03-15', 'amount' => 300,],
-            ['description' => 'January expense', 'expense_date' => '2025-01-15', 'amount' => 100,],
-            ['description' => 'February expense', 'expense_date' => '2025-02-15', 'amount' => 200,],
+            ['description' => 'March expense', 'expense_date' => '2025-03-15', 'amount' => '300.00'],
+            ['description' => 'January expense', 'expense_date' => '2025-01-15', 'amount' => '100.00'],
+            ['description' => 'February expense', 'expense_date' => '2025-02-15', 'amount' => '200.00'],
         ];
 
         foreach ($expenses as $data) {
@@ -382,7 +382,7 @@ class ExpenseServiceTest extends Unit
             $expense->user_id = Yii::$app->user->id;
             $expense->category_id = $category->id;
             $expense->description = $data['description'];
-            $expense->amount = $data['amount'];
+            $expense->amount = MoneyFactory::fromDecimal($data['amount']);
             $expense->expense_date = $data['expense_date'];
             $expense->save(false);
         }
@@ -401,10 +401,4 @@ class ExpenseServiceTest extends Unit
         $this->assertEquals(2, $result['pagination']['per_page']);
         $this->assertEquals(2, $result['pagination']['pages']);
     }
-
-
-
-
-
-
 }
